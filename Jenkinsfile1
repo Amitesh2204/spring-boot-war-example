@@ -1,5 +1,7 @@
 pipeline{
+
     agent any
+	
     tools {
         maven 'Maven'
     }
@@ -9,19 +11,19 @@ pipeline{
                 sh 'mvn test'
             }          
     }
-    stages{
+    
         stage("Build Code"){
             steps{
                 sh 'mvn package'
             }          
     }
-    stages{
+    
         stage("Deploy Build Test"){
             steps{
                 deploy adapters: [tomcat9(credentialsId: 'tomcat9details', path: '', url: 'http://localhost:8082')], contextPath: '/app', onFailure: false, war: '**/*.war'
             }          
     }
-    stages{
+    
         stage("Deploy Build PROD"){
             input {
         message 'Should be continue job?'
@@ -30,7 +32,7 @@ pipeline{
                     choice(name: 'Input', choices: ['Yes','No'], description: 'Need to Deploy on PROD or not?')
                 }
       }
-            steps{
+	                    steps{
                 deploy adapters: [tomcat9(credentialsId: 'tomcat9details', path: '', url: 'http://localhost:8082')], contextPath: '/app', onFailure: false, war: '**/*.war'
             }          
     }
